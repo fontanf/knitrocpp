@@ -17,6 +17,35 @@ using VariableId = KNINT;
 using ConstraintId = KNINT;
 
 /**
+ * Class for handling Knitro exceptions.
+ */
+class KnitroException: public std::exception
+{
+
+public:
+
+    KnitroException(
+            const std::string& function_name,
+            int return_code)
+    {
+        message_
+            = "KnitroCpp error: return code for C function '"
+            + function_name + "' is "
+            + std::to_string(return_code) + ".";
+    }
+
+    const char * what() const noexcept override
+    {
+        return message_.c_str();
+    }
+
+private:
+
+    std::string message_;
+
+};
+
+/**
  * Class for a Knitro context.
  */
 class Context
@@ -32,15 +61,10 @@ public:
     Context()
     {
         int knitro_return_code = KN_new(&knitro_context_);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::Context - return code: "
-                    + std::to_string(knitro_return_code));
-        }
-        if (knitro_context_ == NULL) {
-            throw std::runtime_error(
-                    "Failed to find a valid license.");
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_new", knitro_return_code);
+        if (knitro_context_ == NULL)
+            throw std::runtime_error("Failed to find a valid license.");
     }
 
     /** Destructor. */
@@ -63,11 +87,8 @@ public:
                 knitro_context_,
                 param_id,
                 value);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::set_int_param - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_int_param", knitro_return_code);
     }
 
     /** Set a character valued parameter using its integer identifier. */
@@ -79,11 +100,8 @@ public:
                 knitro_context_,
                 param_id,
                 value);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::set_char_param - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_char_param", knitro_return_code);
     }
 
     /** Set a double valued parameter using its integer identifier. */
@@ -95,11 +113,8 @@ public:
                 knitro_context_,
                 param_id,
                 value);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::set_double_param - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_double_param", knitro_return_code);
     }
 
     /*
@@ -113,11 +128,8 @@ public:
         int knitro_return_code = KN_add_var(
                 knitro_context_,
                 &variable_id);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::add_var - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_add_var", knitro_return_code);
         return variable_id;
     }
 
@@ -128,11 +140,8 @@ public:
         int knitro_return_code = KN_add_con(
                 knitro_context_,
                 &constraint_id);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::add_con - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_add_con", knitro_return_code);
         return constraint_id;
     }
 
@@ -145,11 +154,8 @@ public:
                 knitro_context_,
                 variable_id,
                 lower_bound);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::set_var_lobnd - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_var_lobnd", knitro_return_code);
     }
 
     /** Set the upper bound of a variable. */
@@ -161,11 +167,8 @@ public:
                 knitro_context_,
                 variable_id,
                 upper_bound);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::set_var_upbnd - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_var_upbnd", knitro_return_code);
     }
 
     /** Get the lower bound of a variable. */
@@ -177,11 +180,8 @@ public:
                 knitro_context_,
                 variable_id,
                 &lower_bound);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::get_var_lobnd - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_var_lobnd", knitro_return_code);
         return lower_bound;
     }
 
@@ -194,11 +194,8 @@ public:
                 knitro_context_,
                 variable_id,
                 &upper_bound);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::get_var_upbnd - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_var_upbnd", knitro_return_code);
         return upper_bound;
     }
 
@@ -211,11 +208,8 @@ public:
                 knitro_context_,
                 variable_id,
                 variable_type);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::set_var_type - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_var_type", knitro_return_code);
     }
 
     /** Get the type of a variable. */
@@ -227,11 +221,8 @@ public:
                 knitro_context_,
                 variable_id,
                 &variable_type);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::get_var_type - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_var_type", knitro_return_code);
         return variable_type;
     }
 
@@ -244,11 +235,8 @@ public:
                 knitro_context_,
                 constraint_id,
                 lower_bound);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::set_con_lobnd - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_con_lobnd", knitro_return_code);
     }
 
     /** Set the upper bound of a constraint. */
@@ -260,11 +248,8 @@ public:
                 knitro_context_,
                 constraint_id,
                 upper_bound);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::set_con_upbnd - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_con_upbnd", knitro_return_code);
     }
 
     /** Get the lower bound of a constraint. */
@@ -276,11 +261,8 @@ public:
                 knitro_context_,
                 constraint_id,
                 &lower_bound);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::get_con_lobnd - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_con_lobnd", knitro_return_code);
         return lower_bound;
     }
 
@@ -293,11 +275,8 @@ public:
                 knitro_context_,
                 constraint_id,
                 &upper_bound);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::get_con_upbnd - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_con_upbnd", knitro_return_code);
         return upper_bound;
     }
 
@@ -308,11 +287,8 @@ public:
         int knitro_return_code = KN_set_obj_goal(
                 knitro_context_,
                 objective_goal);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::set_obj_goal - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_obj_goal", knitro_return_code);
     }
 
     /** Set the intial value of a primal variable. */
@@ -324,11 +300,8 @@ public:
                 knitro_context_,
                 variable_id,
                 value);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::set_var_primal_init_value - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_var_primal_init_value", knitro_return_code);
     }
 
     /** Set the intial value of a dual variable. */
@@ -340,11 +313,8 @@ public:
                 knitro_context_,
                 variable_id,
                 value);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::set_var_dual_init_value - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_var_dual_init_value", knitro_return_code);
     }
 
     /** Set the intial value of a dual constraint. */
@@ -356,11 +326,8 @@ public:
                 knitro_context_,
                 constraint_id,
                 value);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::set_con_dual_init_value - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_con_dual_init_value", knitro_return_code);
     }
 
     /*
@@ -380,11 +347,8 @@ public:
                 knitro_context_,
                 variable_id,
                 coefficient);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::add_obj_linear_term - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_add_obj_linear_term", knitro_return_code);
     }
 
     /** Add linear structure to the constraint functions. */
@@ -398,11 +362,8 @@ public:
                 constraint_id,
                 variable_id,
                 coefficient);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::add_con_linear_term - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_add_con_linear_term", knitro_return_code);
     }
 
     /** Add quadratic structure to the objective. */
@@ -416,11 +377,8 @@ public:
                 variable_id_1,
                 variable_id_2,
                 coefficient);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::add_obj_quadratic_term - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_add_obj_quadratic_term", knitro_return_code);
     }
 
     /** Add quadratic structure to the constraint functions. */
@@ -436,11 +394,8 @@ public:
                 variable_id_1,
                 variable_id_2,
                 coefficient);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::add_con_quadratic_term - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_add_con_quadratic_term", knitro_return_code);
     }
 
     /*
@@ -505,20 +460,14 @@ public:
                 constraint_ids.data(),
                 eval_callback,
                 &callback_context);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::add_eval_callback - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_add_eval_callback", knitro_return_code);
         knitro_return_code = KN_set_cb_user_params(
                 knitro_context_,
                 callback_context,
                 eval_callbacks_.back().get());
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::add_eval_callback - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_cb_user_params", knitro_return_code);
         cb2eval_[callback_context] = eval_callbacks_.back().get();
         return callback_context;
     }
@@ -557,11 +506,8 @@ public:
                 (jacobian_constraint_ids == nullptr)? nullptr: jacobian_constraint_ids->data(),
                 (jacobian_variable_ids == nullptr)? nullptr: jacobian_variable_ids->data(),
                 gradient_callback);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::set_cb_grad - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_cb_grad", knitro_return_code);
     }
 
     static int hessian_callback(
@@ -595,11 +541,8 @@ public:
                 (variable_ids_1 == nullptr)? nullptr: variable_ids_1->data(),
                 (variable_ids_1 == nullptr)? nullptr: variable_ids_2->data(),
                 hessian_callback);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::set_cb_hess - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_cb_hess", knitro_return_code);
     }
 
     /*
@@ -628,11 +571,8 @@ public:
                 knitro_context_,
                 mip_node_callback,
                 (void* const)this);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::set_mip_node_callback - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_mip_node_callback", knitro_return_code);
     }
 
     /*
@@ -648,11 +588,8 @@ public:
                 knitro_context_,
                 variable_id,
                 value);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::set_mip_var_primal_init_value - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_mip_var_primal_init_value", knitro_return_code);
     }
 
     /*
@@ -676,11 +613,8 @@ public:
         int knitro_return_code = KN_get_number_vars(
                 knitro_context_,
                 &number_of_variables);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::get_number_vars - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_number_vars", knitro_return_code);
         return number_of_variables;
     }
 
@@ -691,11 +625,8 @@ public:
         int knitro_return_code = KN_get_number_cons(
                 knitro_context_,
                 &number_of_constraints);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::get_number_cons - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_number_cons", knitro_return_code);
         return number_of_constraints;
     }
 
@@ -706,11 +637,8 @@ public:
         int knitro_return_code = KN_get_obj_value(
                 knitro_context_,
                 &objective);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::get_obj_value - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_obj_value", knitro_return_code);
         return objective;
     }
 
@@ -723,11 +651,8 @@ public:
                 knitro_context_,
                 variable_id,
                 &value);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::get_var_primal_value - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_var_primal_value", knitro_return_code);
         return value;
     }
 
@@ -740,11 +665,8 @@ public:
                 knitro_context_,
                 variable_id,
                 &value);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::get_var_dual_value - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_var_dual_value", knitro_return_code);
         return value;
     }
 
@@ -757,11 +679,8 @@ public:
                 knitro_context_,
                 constraint_id,
                 &value);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::get_con_dual_value - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_con_dual_value", knitro_return_code);
         return value;
     }
 
@@ -774,11 +693,8 @@ public:
                 knitro_context_,
                 constraint_id,
                 &value);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::get_con_value - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_con_value", knitro_return_code);
         return value;
     }
 
@@ -789,11 +705,8 @@ public:
         int knitro_return_code = KN_get_abs_feas_error(
                 knitro_context_,
                 &abs_feas_error);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::get_abs_feas_error - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_abs_feas_error", knitro_return_code);
         return abs_feas_error;
     }
 
@@ -804,11 +717,8 @@ public:
         int knitro_return_code = KN_get_rel_feas_error(
                 knitro_context_,
                 &rel_feas_error);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::get_rel_feas_error - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_rel_feas_error", knitro_return_code);
         return rel_feas_error;
     }
 
@@ -819,11 +729,8 @@ public:
         int knitro_return_code = KN_get_abs_opt_error(
                 knitro_context_,
                 &abs_opt_error);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::get_abs_opt_error - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_abs_opt_error", knitro_return_code);
         return abs_opt_error;
     }
 
@@ -834,11 +741,8 @@ public:
         int knitro_return_code = KN_get_rel_opt_error(
                 knitro_context_,
                 &rel_opt_error);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::get_rel_opt_error - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_rel_opt_error", knitro_return_code);
         return rel_opt_error;
     }
 
@@ -849,11 +753,8 @@ public:
         int knitro_return_code = KN_get_mip_incumbent_obj(
                 knitro_context_,
                 &incumbent_objective);
-        if (knitro_return_code < 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::get_mip_incumbent_obj - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code < 0)
+            throw KnitroException("KN_get_mip_incumbent_obj", knitro_return_code);
         return (knitro_return_code == 0);
     }
 
@@ -864,11 +765,8 @@ public:
         int knitro_return_code = KN_get_mip_incumbent_obj(
                 knitro_context_,
                 &incumbent_objective);
-        if (knitro_return_code < 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::get_mip_incumbent_obj - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code < 0)
+            throw KnitroException("KN_get_mip_incumbent_obj", knitro_return_code);
         return incumbent_objective;
     }
 
@@ -879,11 +777,8 @@ public:
         int knitro_return_code = KN_get_mip_relaxation_bnd(
                 knitro_context_,
                 &relaxation_bound);
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::get_mip_relaxation_bnd - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_mip_relaxation_bnd", knitro_return_code);
         return relaxation_bound;
     }
 
@@ -894,11 +789,8 @@ public:
         int knitro_return_code = KN_get_mip_incumbent_x(
                 knitro_context_,
                 mip_incumbent_x.data());
-        if (knitro_return_code != 0) {
-            throw std::runtime_error(
-                    "knitrocpp::Context::get_mip_incumbent_x - return code: "
-                    + std::to_string(knitro_return_code));
-        }
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_mip_incumbent_x", knitro_return_code);
         return mip_incumbent_x;
     }
 
