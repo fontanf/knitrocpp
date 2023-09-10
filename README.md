@@ -10,6 +10,7 @@ The philosphy of this interface is to reproduce the C interface in a C++ way, th
 
 Examples:
 * [hs15](examples/hs15.cpp): a simple example that shows how to input linear structures, quadratic structures, and evaluation callbacks.
+* [generalized assignment problem](https://github.com/fontanf/generalizedassignmentsolver/blob/master/generalizedassignmentsolver/algorithms/milp_knitro.cpp): a more complete example of an integer linear problem.
 
 Compile examples:
 * The `KNITRODIR` environment variable must have been set correctly.
