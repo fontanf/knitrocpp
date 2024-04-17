@@ -19,11 +19,11 @@ FetchContent_Declare(
     #SOURCE_DIR "${PROJECT_SOURCE_DIR}/../knitrocpp/")
 FetchContent_MakeAvailable(knitrocpp)
 
-add_executable(KnitroCpp_hs15)
-target_sources(KnitroCpp_hs15 PRIVATE
+add_executable(hs15)
+target_sources(hs15 PRIVATE
     hs15.cpp)
-target_link_libraries(KnitroCpp_hs15 PUBLIC
-    KnitroCpp_knitrocpp)
+target_link_libraries(hs15 PUBLIC
+    KnitroCpp::knitrocpp)
 ```
 
 Examples:
