@@ -8,20 +8,40 @@ The philosphy of this interface is to reproduce the C interface in a C++ way, th
 * Getting rid of the `free` calls
 * Defining callbacks through lamabda functions
 
+The interface only consists of a single header file [knitro.hpp](include/knitrocpp/knitro.hpp).
+
+It also provides a simple way to integrate Knitro and this interface inside a CMake project:
+```cmake
+FetchContent_Declare(
+    knitrocpp
+    GIT_REPOSITORY https://github.com/fontanf/knitrocpp.git
+    GIT_TAG ...)
+    #SOURCE_DIR "${PROJECT_SOURCE_DIR}/../knitrocpp/")
+FetchContent_MakeAvailable(knitrocpp)
+
+add_executable(KnitroCpp_hs15)
+target_sources(KnitroCpp_hs15 PRIVATE
+    hs15.cpp)
+target_link_libraries(KnitroCpp_hs15 PUBLIC
+    KnitroCpp_knitrocpp)
+```
+
 Examples:
-* [hs15](examples/hs15.cpp): a simple example that shows how to input linear structures, quadratic structures, and evaluation callbacks.
+* [hs15](src/examples/hs15.cpp): a simple example that shows how to input linear structures, quadratic structures, and evaluation callbacks.
 * [generalized assignment problem](https://github.com/fontanf/generalizedassignmentsolver/blob/master/generalizedassignmentsolver/algorithms/milp_knitro.cpp): a more complete example of an integer linear problem.
 
 Compile examples:
 * The `KNITRODIR` environment variable must have been set correctly.
 * Then:
 ```shell
-bazel build -- //...
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --config Release --parallel
+cmake --install build --config Release --prefix install
 ```
 
 Run an example:
 ```shell
-./bazel-bin/examples/hs15
+./install/bin/knitrocpp_hs15
 ```
 ```
 =======================================
