@@ -34,7 +34,7 @@ public:
             + std::to_string(return_code) + ".";
     }
 
-    const char * what() const noexcept override
+    const char* what() const noexcept override
     {
         return message_.c_str();
     }
@@ -143,6 +143,34 @@ public:
         if (knitro_return_code != 0)
             throw KnitroException("KN_add_con", knitro_return_code);
         return constraint_id;
+    }
+
+    /** Set the name of a variable. */
+    void set_var_name(
+            VariableId variable_id,
+            const std::string& name)
+    {
+        int knitro_return_code = KN_set_var_name(
+                knitro_context_,
+                variable_id,
+                const_cast<char*>(name.c_str()));
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_var_name", knitro_return_code);
+    }
+
+    /** Get the name of a variable. */
+    std::string get_var_name(
+            VariableId variable_id) const
+    {
+        char name[128];
+        int knitro_return_code = KN_get_var_name(
+                knitro_context_,
+                variable_id,
+                128,
+                name);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_var_name", knitro_return_code);
+        return std::string(name);
     }
 
     /** Set the lower bound of a variable. */
@@ -291,6 +319,18 @@ public:
             throw KnitroException("KN_set_obj_goal", knitro_return_code);
     }
 
+    /** Get the objective goal (KN_OBJGOAL_MINIMIZE or KN_OBJGOAL_MAXIMIZE). */
+    int get_obj_goal() const
+    {
+        int objective_goal = 0;
+        int knitro_return_code = KN_get_obj_goal(
+                knitro_context_,
+                &objective_goal);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_obj_goal", knitro_return_code);
+        return objective_goal;
+    }
+
     /** Set the intial value of a primal variable. */
     void set_var_primal_init_value(
             VariableId variable_id,
@@ -343,7 +383,7 @@ public:
             VariableId variable_id,
             const double coefficient)
     {
-        int knitro_return_code = KN_add_obj_linear_term (
+        int knitro_return_code = KN_add_obj_linear_term(
                 knitro_context_,
                 variable_id,
                 coefficient);
@@ -592,6 +632,17 @@ public:
             throw KnitroException("KN_set_mip_var_primal_init_value", knitro_return_code);
     }
 
+    /** Read a problem from an MPS file. */
+    void load_mps_file(
+            const std::string& problem_path)
+    {
+        int knitro_return_code = KN_load_mps_file(
+                knitro_context_,
+                problem_path.c_str());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_load_mps_file", knitro_return_code);
+    }
+
     /*
      * Solving
      */
@@ -633,13 +684,13 @@ public:
     /** Get the value of the objective. */
     double get_obj_value() const
     {
-        double objective = 0.0;
+        double objective_value = 0.0;
         int knitro_return_code = KN_get_obj_value(
                 knitro_context_,
-                &objective);
+                &objective_value);
         if (knitro_return_code != 0)
             throw KnitroException("KN_get_obj_value", knitro_return_code);
-        return objective;
+        return objective_value;
     }
 
     /** Get the value of a primal variable. */
