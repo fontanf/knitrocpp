@@ -27,7 +27,7 @@ target_link_libraries(hs15 PUBLIC
 ```
 
 Examples:
-* [hs15](src/examples/hs15.cpp): a simple example that shows how to input linear structures, quadratic structures, and evaluation callbacks.
+* [hs15](examples/hs15.cpp): a simple example that shows how to input linear structures, quadratic structures, and evaluation callbacks.
 * [generalized assignment problem](https://github.com/fontanf/generalizedassignmentsolver/blob/master/generalizedassignmentsolver/algorithms/milp_knitro.cpp): a more complete example of an integer linear problem.
 
 Compile examples:

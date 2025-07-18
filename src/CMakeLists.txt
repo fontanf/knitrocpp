@@ -4,5 +4,3 @@ target_include_directories(KnitroCpp_knitrocpp INTERFACE
 target_link_libraries(KnitroCpp_knitrocpp INTERFACE
     KnitroCpp_knitro)
 add_library(KnitroCpp::knitrocpp ALIAS KnitroCpp_knitrocpp)
-
-add_subdirectory(examples)
