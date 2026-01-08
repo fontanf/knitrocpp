@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15.0)
+cmake_minimum_required(VERSION 3.28.0)
 
 project(KnitroCpp LANGUAGES CXX)
 
