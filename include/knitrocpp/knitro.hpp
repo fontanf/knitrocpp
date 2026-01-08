@@ -133,6 +133,18 @@ public:
         return variable_id;
     }
 
+    /** Add multiple variables to the problem. */
+    void add_vars(VariableId number_of_variables)
+    {
+        VariableId variable_id = -1;
+        int knitro_return_code = KN_add_vars(
+                knitro_context_,
+                number_of_variables,
+                NULL);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_add_vars", knitro_return_code);
+    }
+
     /** Add an empty constraint to the problem. */
     ConstraintId add_con()
     {
@@ -143,6 +155,17 @@ public:
         if (knitro_return_code != 0)
             throw KnitroException("KN_add_con", knitro_return_code);
         return constraint_id;
+    }
+
+    /** Add empty constraints to the problem. */
+    void add_cons(ConstraintId number_of_constraints)
+    {
+        int knitro_return_code = KN_add_cons(
+                knitro_context_,
+                number_of_constraints,
+                NULL);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_add_cons", knitro_return_code);
     }
 
     /** Set the lower bound of a variable. */
@@ -158,6 +181,17 @@ public:
             throw KnitroException("KN_set_var_lobnd", knitro_return_code);
     }
 
+    /** Set the lower bounds of the variables. */
+    void set_var_lobnds(
+            const std::vector<double>& lower_bounds)
+    {
+        int knitro_return_code = KN_set_var_lobnds_all(
+                knitro_context_,
+                lower_bounds.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_var_lobnds_all", knitro_return_code);
+    }
+
     /** Set the upper bound of a variable. */
     void set_var_upbnd(
             VariableId variable_id,
@@ -169,6 +203,17 @@ public:
                 upper_bound);
         if (knitro_return_code != 0)
             throw KnitroException("KN_set_var_upbnd", knitro_return_code);
+    }
+
+    /** Set the upper bounds of the variables. */
+    void set_var_upbnds(
+            const std::vector<double>& upper_bounds)
+    {
+        int knitro_return_code = KN_set_var_upbnds_all(
+                knitro_context_,
+                upper_bounds.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_var_upbnds_all", knitro_return_code);
     }
 
     /** Get the lower bound of a variable. */
@@ -302,6 +347,17 @@ public:
                 value);
         if (knitro_return_code != 0)
             throw KnitroException("KN_set_var_primal_init_value", knitro_return_code);
+    }
+
+    /** Set the intial values of the primal variables. */
+    void set_var_primal_init_values(
+            const std::vector<double>& values)
+    {
+        int knitro_return_code = KN_set_var_primal_init_values_all(
+                knitro_context_,
+                values.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_var_primal_init_values_all", knitro_return_code);
     }
 
     /** Set the intial value of a dual variable. */
@@ -654,6 +710,18 @@ public:
         if (knitro_return_code != 0)
             throw KnitroException("KN_get_var_primal_value", knitro_return_code);
         return value;
+    }
+
+    /** Get the values of the primal variables. */
+    std::vector<double> get_var_primal_values() const
+    {
+        std::vector<double> values(this->get_number_vars(), 0.0);;
+        int knitro_return_code = KN_get_var_primal_values_all(
+                knitro_context_,
+                values.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_var_primal_values_all", knitro_return_code);
+        return values;
     }
 
     /** Get the value of a dual variable. */
