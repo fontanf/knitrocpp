@@ -479,29 +479,6 @@ public:
             KN_eval_request_ptr const,
             KN_eval_result_ptr const)>;
 
-    struct EvalCallbackStruct
-    {
-        EvalCallback eval_callback;
-        EvalCallback gradient;
-        EvalCallback hessian;
-    };
-
-    static int eval_callback(
-            KN_context* kc,
-            CB_context* callback_context,
-            KN_eval_request_ptr const eval_request,
-            KN_eval_result_ptr const eval_result,
-            void* const user_params)
-    {
-        EvalCallbackStruct* eval_callback_struct = (EvalCallbackStruct*)user_params;
-        Context knitro_context(kc);
-        return eval_callback_struct->eval_callback(
-                knitro_context,
-                callback_context,
-                eval_request,
-                eval_result);
-    }
-
     CB_context* add_eval_callback(
             bool evaluate_objective,
             const std::vector<ConstraintId>& constraint_ids,
@@ -529,22 +506,6 @@ public:
             throw KnitroException("KN_set_cb_user_params", knitro_return_code);
         cb2eval_[callback_context] = eval_callbacks_.back().get();
         return callback_context;
-    }
-
-    static int gradient_callback(
-            KN_context* kc,
-            CB_context* callback_context,
-            KN_eval_request_ptr const eval_request,
-            KN_eval_result_ptr const eval_result,
-            void* const user_params)
-    {
-        EvalCallbackStruct* eval_callback_struct = (EvalCallbackStruct*)user_params;
-        Context knitro_context(kc);
-        return eval_callback_struct->gradient(
-                knitro_context,
-                callback_context,
-                eval_request,
-                eval_result);
     }
 
     /** Set gradient callback (dense). */
@@ -588,22 +549,6 @@ public:
             throw KnitroException("KN_set_cb_grad", knitro_return_code);
     }
 
-    static int hessian_callback(
-            KN_context* kc,
-            CB_context* callback_context,
-            KN_eval_request_ptr const eval_request,
-            KN_eval_result_ptr const eval_result,
-            void* const user_params)
-    {
-        EvalCallbackStruct* eval_callback_struct = (EvalCallbackStruct*)user_params;
-        Context knitro_context(kc);
-        return eval_callback_struct->hessian(
-                knitro_context,
-                callback_context,
-                eval_request,
-                eval_result);
-    }
-
     /** Set Hessian callback (dense). */
     void set_cb_hess(
             CB_context* callback_context,
@@ -645,17 +590,6 @@ public:
      */
 
     using UserCallback = std::function<int(const Context&, const double* const, const double* const)>;
-
-    static int mip_node_callback(
-            KN_context* kc,
-            const double* const x,
-            const double* const lambda,
-            void* const user_params)
-    {
-        Context* knitro_context_orig = (Context*)user_params;
-        Context knitro_context(kc);
-        return knitro_context_orig->mip_node_callback_(knitro_context, x, lambda);
-    }
 
     /** Set the MIP node callback. */
     void set_mip_node_callback(
@@ -924,6 +858,72 @@ private:
     /*
      * Private methods
      */
+
+    struct EvalCallbackStruct
+    {
+        EvalCallback eval_callback;
+        EvalCallback gradient;
+        EvalCallback hessian;
+    };
+
+    static int eval_callback(
+            KN_context* kc,
+            CB_context* callback_context,
+            KN_eval_request_ptr const eval_request,
+            KN_eval_result_ptr const eval_result,
+            void* const user_params)
+    {
+        EvalCallbackStruct* eval_callback_struct = (EvalCallbackStruct*)user_params;
+        Context knitro_context(kc);
+        return eval_callback_struct->eval_callback(
+                knitro_context,
+                callback_context,
+                eval_request,
+                eval_result);
+    }
+
+    static int gradient_callback(
+            KN_context* kc,
+            CB_context* callback_context,
+            KN_eval_request_ptr const eval_request,
+            KN_eval_result_ptr const eval_result,
+            void* const user_params)
+    {
+        EvalCallbackStruct* eval_callback_struct = (EvalCallbackStruct*)user_params;
+        Context knitro_context(kc);
+        return eval_callback_struct->gradient(
+                knitro_context,
+                callback_context,
+                eval_request,
+                eval_result);
+    }
+
+    static int hessian_callback(
+            KN_context* kc,
+            CB_context* callback_context,
+            KN_eval_request_ptr const eval_request,
+            KN_eval_result_ptr const eval_result,
+            void* const user_params)
+    {
+        EvalCallbackStruct* eval_callback_struct = (EvalCallbackStruct*)user_params;
+        Context knitro_context(kc);
+        return eval_callback_struct->hessian(
+                knitro_context,
+                callback_context,
+                eval_request,
+                eval_result);
+    }
+
+    static int mip_node_callback(
+            KN_context* kc,
+            const double* const x,
+            const double* const lambda,
+            void* const user_params)
+    {
+        Context* knitro_context_orig = (Context*)user_params;
+        Context knitro_context(kc);
+        return knitro_context_orig->mip_node_callback_(knitro_context, x, lambda);
+    }
 
     /** Constructor from an already existing C context. */
     Context(KN_context* knitro_context):
