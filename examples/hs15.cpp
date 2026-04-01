@@ -105,10 +105,10 @@ int main(int, char**)
     knitro_context.set_cb_grad(
             callback_context,
             [&variables](
-                const knitrocpp::Context&,
-                CB_context*,
-                KN_eval_request_ptr const eval_request,
-                KN_eval_result_ptr const eval_result)
+                    const knitrocpp::Context&,
+                    CB_context*,
+                    KN_eval_request_ptr const eval_request,
+                    KN_eval_result_ptr const eval_result)
             {
                 const double* x = eval_request->x;
                 double tmp = x[variables.x1] - x[variables.x0] * x[variables.x0];

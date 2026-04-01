@@ -81,6 +81,34 @@ public:
      * Changing and reading solver parameters
      */
 
+    /** Reset all parameters to their default values. */
+    void reset_params_to_defaults()
+    {
+        int knitro_return_code = KN_reset_params_to_defaults(knitro_context_);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_reset_params_to_defaults", knitro_return_code);
+    }
+
+    /** Load all parameters from a file. */
+    void load_param_file(const std::string& filename)
+    {
+        int knitro_return_code = KN_load_param_file(
+                knitro_context_,
+                filename.c_str());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_load_param_file", knitro_return_code);
+    }
+
+    /** Save all current parameter values to a file. */
+    void save_param_file(const std::string& filename)
+    {
+        int knitro_return_code = KN_save_param_file(
+                knitro_context_,
+                filename.c_str());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_save_param_file", knitro_return_code);
+    }
+
     /** Set an integer valued parameter using its integer identifier. */
     void set_int_param(
             const int param_id,
@@ -118,6 +146,97 @@ public:
                 value);
         if (knitro_return_code != 0)
             throw KnitroException("KN_set_double_param", knitro_return_code);
+    }
+
+    /** Set an integer valued parameter using its string name. */
+    void set_int_param_by_name(
+            const std::string& name,
+            const int value)
+    {
+        int knitro_return_code = KN_set_int_param_by_name(
+                knitro_context_,
+                name.c_str(),
+                value);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_int_param_by_name", knitro_return_code);
+    }
+
+    /** Set a character valued parameter using its string name. */
+    void set_char_param_by_name(
+            const std::string& name,
+            const std::string& value)
+    {
+        int knitro_return_code = KN_set_char_param_by_name(
+                knitro_context_,
+                name.c_str(),
+                value.c_str());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_char_param_by_name", knitro_return_code);
+    }
+
+    /** Set a double valued parameter using its string name. */
+    void set_double_param_by_name(
+            const std::string& name,
+            const double value)
+    {
+        int knitro_return_code = KN_set_double_param_by_name(
+                knitro_context_,
+                name.c_str(),
+                value);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_double_param_by_name", knitro_return_code);
+    }
+
+    /** Get an integer valued parameter using its integer identifier. */
+    int get_int_param(const int param_id) const
+    {
+        int value = 0;
+        int knitro_return_code = KN_get_int_param(
+                knitro_context_,
+                param_id,
+                &value);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_int_param", knitro_return_code);
+        return value;
+    }
+
+    /** Get a double valued parameter using its integer identifier. */
+    double get_double_param(const int param_id) const
+    {
+        double value = 0.0;
+        int knitro_return_code = KN_get_double_param(
+                knitro_context_,
+                param_id,
+                &value);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_double_param", knitro_return_code);
+        return value;
+    }
+
+    /** Get an integer valued parameter using its string name. */
+    int get_int_param_by_name(const std::string& name) const
+    {
+        int value = 0;
+        int knitro_return_code = KN_get_int_param_by_name(
+                knitro_context_,
+                name.c_str(),
+                &value);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_int_param_by_name", knitro_return_code);
+        return value;
+    }
+
+    /** Get a double valued parameter using its string name. */
+    double get_double_param_by_name(const std::string& name) const
+    {
+        double value = 0.0;
+        int knitro_return_code = KN_get_double_param_by_name(
+                knitro_context_,
+                name.c_str(),
+                &value);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_double_param_by_name", knitro_return_code);
+        return value;
     }
 
     /*
@@ -187,7 +306,21 @@ public:
             throw KnitroException("KN_set_var_lobnd", knitro_return_code);
     }
 
-    /** Set the lower bounds of the variables. */
+    /** Set the lower bounds of a subset of variables. */
+    void set_var_lobnds(
+            const std::vector<VariableId>& variable_ids,
+            const std::vector<double>& lower_bounds)
+    {
+        int knitro_return_code = KN_set_var_lobnds(
+                knitro_context_,
+                variable_ids.size(),
+                variable_ids.data(),
+                lower_bounds.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_var_lobnds", knitro_return_code);
+    }
+
+    /** Set the lower bounds of all variables. */
     void set_var_lobnds(
             const std::vector<double>& lower_bounds)
     {
@@ -211,7 +344,21 @@ public:
             throw KnitroException("KN_set_var_upbnd", knitro_return_code);
     }
 
-    /** Set the upper bounds of the variables. */
+    /** Set the upper bounds of a subset of variables. */
+    void set_var_upbnds(
+            const std::vector<VariableId>& variable_ids,
+            const std::vector<double>& upper_bounds)
+    {
+        int knitro_return_code = KN_set_var_upbnds(
+                knitro_context_,
+                variable_ids.size(),
+                variable_ids.data(),
+                upper_bounds.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_var_upbnds", knitro_return_code);
+    }
+
+    /** Set the upper bounds of all variables. */
     void set_var_upbnds(
             const std::vector<double>& upper_bounds)
     {
@@ -220,6 +367,44 @@ public:
                 upper_bounds.data());
         if (knitro_return_code != 0)
             throw KnitroException("KN_set_var_upbnds_all", knitro_return_code);
+    }
+
+    /** Set a fixed bound on a variable (lower == upper). */
+    void set_var_fxbnd(
+            VariableId variable_id,
+            double fixed_bound)
+    {
+        int knitro_return_code = KN_set_var_fxbnd(
+                knitro_context_,
+                variable_id,
+                fixed_bound);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_var_fxbnd", knitro_return_code);
+    }
+
+    /** Set fixed bounds on a subset of variables. */
+    void set_var_fxbnds(
+            const std::vector<VariableId>& variable_ids,
+            const std::vector<double>& fixed_bounds)
+    {
+        int knitro_return_code = KN_set_var_fxbnds(
+                knitro_context_,
+                variable_ids.size(),
+                variable_ids.data(),
+                fixed_bounds.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_var_fxbnds", knitro_return_code);
+    }
+
+    /** Set fixed bounds on all variables. */
+    void set_var_fxbnds(
+            const std::vector<double>& fixed_bounds)
+    {
+        int knitro_return_code = KN_set_var_fxbnds_all(
+                knitro_context_,
+                fixed_bounds.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_var_fxbnds_all", knitro_return_code);
     }
 
     /** Get the lower bound of a variable. */
@@ -250,6 +435,20 @@ public:
         return upper_bound;
     }
 
+    /** Get the fixed bound of a variable. */
+    double get_var_fxbnd(
+            VariableId variable_id) const
+    {
+        double fixed_bound = 0.0;
+        int knitro_return_code = KN_get_var_fxbnd(
+                knitro_context_,
+                variable_id,
+                &fixed_bound);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_var_fxbnd", knitro_return_code);
+        return fixed_bound;
+    }
+
     /** Set the type of a variable. */
     void set_var_type(
             VariableId variable_id,
@@ -261,6 +460,31 @@ public:
                 variable_type);
         if (knitro_return_code != 0)
             throw KnitroException("KN_set_var_type", knitro_return_code);
+    }
+
+    /** Set the types of a subset of variables. */
+    void set_var_types(
+            const std::vector<VariableId>& variable_ids,
+            const std::vector<int>& variable_types)
+    {
+        int knitro_return_code = KN_set_var_types(
+                knitro_context_,
+                variable_ids.size(),
+                variable_ids.data(),
+                variable_types.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_var_types", knitro_return_code);
+    }
+
+    /** Set the types of all variables. */
+    void set_var_types(
+            const std::vector<int>& variable_types)
+    {
+        int knitro_return_code = KN_set_var_types_all(
+                knitro_context_,
+                variable_types.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_var_types_all", knitro_return_code);
     }
 
     /** Get the type of a variable. */
@@ -277,6 +501,44 @@ public:
         return variable_type;
     }
 
+    /** Set a property on a variable (e.g. KN_VAR_LINEAR). */
+    void set_var_property(
+            VariableId variable_id,
+            int property)
+    {
+        int knitro_return_code = KN_set_var_property(
+                knitro_context_,
+                variable_id,
+                property);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_var_property", knitro_return_code);
+    }
+
+    /** Set properties on a subset of variables. */
+    void set_var_properties(
+            const std::vector<VariableId>& variable_ids,
+            const std::vector<int>& properties)
+    {
+        int knitro_return_code = KN_set_var_properties(
+                knitro_context_,
+                variable_ids.size(),
+                variable_ids.data(),
+                properties.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_var_properties", knitro_return_code);
+    }
+
+    /** Set properties on all variables. */
+    void set_var_properties(
+            const std::vector<int>& properties)
+    {
+        int knitro_return_code = KN_set_var_properties_all(
+                knitro_context_,
+                properties.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_var_properties_all", knitro_return_code);
+    }
+
     /** Set the lower bound of a constraint. */
     void set_con_lobnd(
             ConstraintId constraint_id,
@@ -288,6 +550,31 @@ public:
                 lower_bound);
         if (knitro_return_code != 0)
             throw KnitroException("KN_set_con_lobnd", knitro_return_code);
+    }
+
+    /** Set the lower bounds of a subset of constraints. */
+    void set_con_lobnds(
+            const std::vector<ConstraintId>& constraint_ids,
+            const std::vector<double>& lower_bounds)
+    {
+        int knitro_return_code = KN_set_con_lobnds(
+                knitro_context_,
+                constraint_ids.size(),
+                constraint_ids.data(),
+                lower_bounds.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_con_lobnds", knitro_return_code);
+    }
+
+    /** Set the lower bounds of all constraints. */
+    void set_con_lobnds(
+            const std::vector<double>& lower_bounds)
+    {
+        int knitro_return_code = KN_set_con_lobnds_all(
+                knitro_context_,
+                lower_bounds.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_con_lobnds_all", knitro_return_code);
     }
 
     /** Set the upper bound of a constraint. */
@@ -303,6 +590,31 @@ public:
             throw KnitroException("KN_set_con_upbnd", knitro_return_code);
     }
 
+    /** Set the upper bounds of a subset of constraints. */
+    void set_con_upbnds(
+            const std::vector<ConstraintId>& constraint_ids,
+            const std::vector<double>& upper_bounds)
+    {
+        int knitro_return_code = KN_set_con_upbnds(
+                knitro_context_,
+                constraint_ids.size(),
+                constraint_ids.data(),
+                upper_bounds.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_con_upbnds", knitro_return_code);
+    }
+
+    /** Set the upper bounds of all constraints. */
+    void set_con_upbnds(
+            const std::vector<double>& upper_bounds)
+    {
+        int knitro_return_code = KN_set_con_upbnds_all(
+                knitro_context_,
+                upper_bounds.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_con_upbnds_all", knitro_return_code);
+    }
+
     /** Set an equality bound on a constraint. */
     void set_con_eqbnd(
             ConstraintId constraint_id,
@@ -314,6 +626,31 @@ public:
                 value);
         if (knitro_return_code != 0)
             throw KnitroException("KN_set_con_eqbnd", knitro_return_code);
+    }
+
+    /** Set equality bounds on a subset of constraints. */
+    void set_con_eqbnds(
+            const std::vector<ConstraintId>& constraint_ids,
+            const std::vector<double>& values)
+    {
+        int knitro_return_code = KN_set_con_eqbnds(
+                knitro_context_,
+                constraint_ids.size(),
+                constraint_ids.data(),
+                values.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_con_eqbnds", knitro_return_code);
+    }
+
+    /** Set equality bounds on all constraints. */
+    void set_con_eqbnds(
+            const std::vector<double>& values)
+    {
+        int knitro_return_code = KN_set_con_eqbnds_all(
+                knitro_context_,
+                values.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_con_eqbnds_all", knitro_return_code);
     }
 
     /** Get the lower bound of a constraint. */
@@ -344,6 +681,20 @@ public:
         return upper_bound;
     }
 
+    /** Get the equality bound of a constraint. */
+    double get_con_eqbnd(
+            ConstraintId constraint_id) const
+    {
+        double value = 0.0;
+        int knitro_return_code = KN_get_con_eqbnd(
+                knitro_context_,
+                constraint_id,
+                &value);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_con_eqbnd", knitro_return_code);
+        return value;
+    }
+
     /** Set the objective goal (KN_OBJGOAL_MINIMIZE or KN_OBJGOAL_MAXIMIZE). */
     void set_obj_goal(
             int objective_goal)
@@ -353,6 +704,66 @@ public:
                 objective_goal);
         if (knitro_return_code != 0)
             throw KnitroException("KN_set_obj_goal", knitro_return_code);
+    }
+
+    /** Get the objective goal (KN_OBJGOAL_MINIMIZE or KN_OBJGOAL_MAXIMIZE). */
+    int get_obj_goal() const
+    {
+        int objective_goal = -1;
+        int knitro_return_code = KN_get_obj_goal(
+                knitro_context_,
+                &objective_goal);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_obj_goal", knitro_return_code);
+        return objective_goal;
+    }
+
+    /** Set properties on the objective function. */
+    void set_obj_property(int property)
+    {
+        int knitro_return_code = KN_set_obj_property(
+                knitro_context_,
+                property);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_obj_property", knitro_return_code);
+    }
+
+    /** Set a property on a constraint. */
+    void set_con_property(
+            ConstraintId constraint_id,
+            int property)
+    {
+        int knitro_return_code = KN_set_con_property(
+                knitro_context_,
+                constraint_id,
+                property);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_con_property", knitro_return_code);
+    }
+
+    /** Set properties on a subset of constraints. */
+    void set_con_properties(
+            const std::vector<ConstraintId>& constraint_ids,
+            const std::vector<int>& properties)
+    {
+        int knitro_return_code = KN_set_con_properties(
+                knitro_context_,
+                constraint_ids.size(),
+                constraint_ids.data(),
+                properties.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_con_properties", knitro_return_code);
+    }
+
+    /** Set properties on all constraints. */
+    void set_con_properties(
+            const std::vector<int>& properties)
+    {
+        int knitro_return_code = KN_set_con_properties_all(
+                knitro_context_,
+                properties.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_con_properties_all", knitro_return_code);
     }
 
     /** Set the intial value of a primal variable. */
@@ -366,6 +777,20 @@ public:
                 value);
         if (knitro_return_code != 0)
             throw KnitroException("KN_set_var_primal_init_value", knitro_return_code);
+    }
+
+    /** Set the initial primal values of a subset of variables. */
+    void set_var_primal_init_values(
+            const std::vector<VariableId>& variable_ids,
+            const std::vector<double>& values)
+    {
+        int knitro_return_code = KN_set_var_primal_init_values(
+                knitro_context_,
+                variable_ids.size(),
+                variable_ids.data(),
+                values.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_var_primal_init_values", knitro_return_code);
     }
 
     /** Set the intial values of the primal variables. */
@@ -392,6 +817,31 @@ public:
             throw KnitroException("KN_set_var_dual_init_value", knitro_return_code);
     }
 
+    /** Set the initial dual values of a subset of variables. */
+    void set_var_dual_init_values(
+            const std::vector<VariableId>& variable_ids,
+            const std::vector<double>& values)
+    {
+        int knitro_return_code = KN_set_var_dual_init_values(
+                knitro_context_,
+                variable_ids.size(),
+                variable_ids.data(),
+                values.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_var_dual_init_values", knitro_return_code);
+    }
+
+    /** Set the initial dual values of all variables. */
+    void set_var_dual_init_values(
+            const std::vector<double>& values)
+    {
+        int knitro_return_code = KN_set_var_dual_init_values_all(
+                knitro_context_,
+                values.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_var_dual_init_values_all", knitro_return_code);
+    }
+
     /** Set the intial value of a dual constraint. */
     void set_con_dual_init_value(
             ConstraintId constraint_id,
@@ -405,12 +855,33 @@ public:
             throw KnitroException("KN_set_con_dual_init_value", knitro_return_code);
     }
 
-    /*
-     * Adding/removing/changing constant structure
-     */
+    /** Set the initial dual values of a subset of constraints. */
+    void set_con_dual_init_values(
+            const std::vector<ConstraintId>& constraint_ids,
+            const std::vector<double>& values)
+    {
+        int knitro_return_code = KN_set_con_dual_init_values(
+                knitro_context_,
+                constraint_ids.size(),
+                constraint_ids.data(),
+                values.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_con_dual_init_values", knitro_return_code);
+    }
+
+    /** Set the initial dual values of all constraints. */
+    void set_con_dual_init_values(
+            const std::vector<double>& values)
+    {
+        int knitro_return_code = KN_set_con_dual_init_values_all(
+                knitro_context_,
+                values.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_con_dual_init_values_all", knitro_return_code);
+    }
 
     /*
-     * Adding/removing/changing linear structure
+     * Adding/removing/changing constant structure
      */
 
     /** Add a constant to the objective function. */
@@ -424,6 +895,78 @@ public:
             throw KnitroException("KN_add_obj_constant", knitro_return_code);
     }
 
+    /** Delete all constant terms from the objective function. */
+    void del_obj_constant()
+    {
+        int knitro_return_code = KN_del_obj_constant(knitro_context_);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_del_obj_constant", knitro_return_code);
+    }
+
+    /** Change the constant term in the objective function. */
+    void chg_obj_constant(const double constant)
+    {
+        int knitro_return_code = KN_chg_obj_constant(
+                knitro_context_,
+                constant);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_chg_obj_constant", knitro_return_code);
+    }
+
+    /** Add a constant to a constraint function. */
+    void add_con_constant(
+            ConstraintId constraint_id,
+            const double constant)
+    {
+        int knitro_return_code = KN_add_con_constant(
+                knitro_context_,
+                constraint_id,
+                constant);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_add_con_constant", knitro_return_code);
+    }
+
+    /** Delete all constant terms from a constraint function. */
+    void del_con_constant(ConstraintId constraint_id)
+    {
+        int knitro_return_code = KN_del_con_constant(
+                knitro_context_,
+                constraint_id);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_del_con_constant", knitro_return_code);
+    }
+
+    /** Change the constant term in a constraint function. */
+    void chg_con_constant(
+            ConstraintId constraint_id,
+            const double constant)
+    {
+        int knitro_return_code = KN_chg_con_constant(
+                knitro_context_,
+                constraint_id,
+                constant);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_chg_con_constant", knitro_return_code);
+    }
+
+    /*
+     * Adding/removing/changing linear structure
+     */
+
+    /** Add linear structure to the objective function (bulk). */
+    void add_obj_linear_struct(
+            const std::vector<VariableId>& variable_ids,
+            const std::vector<double>& coefficients)
+    {
+        int knitro_return_code = KN_add_obj_linear_struct(
+                knitro_context_,
+                variable_ids.size(),
+                variable_ids.data(),
+                coefficients.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_add_obj_linear_struct", knitro_return_code);
+    }
+
     /** Add linear structure to the objective function. */
     void add_obj_linear_term(
             VariableId variable_id,
@@ -435,6 +978,38 @@ public:
                 coefficient);
         if (knitro_return_code != 0)
             throw KnitroException("KN_add_obj_linear_term", knitro_return_code);
+    }
+
+    /** Add linear structure to multiple constraint functions at once. */
+    void add_con_linear_struct(
+            const std::vector<ConstraintId>& constraint_ids,
+            const std::vector<VariableId>& variable_ids,
+            const std::vector<double>& coefficients)
+    {
+        int knitro_return_code = KN_add_con_linear_struct(
+                knitro_context_,
+                constraint_ids.size(),
+                constraint_ids.data(),
+                variable_ids.data(),
+                coefficients.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_add_con_linear_struct", knitro_return_code);
+    }
+
+    /** Add linear structure to one constraint function (bulk). */
+    void add_con_linear_struct_one(
+            ConstraintId constraint_id,
+            const std::vector<VariableId>& variable_ids,
+            const std::vector<double>& coefficients)
+    {
+        int knitro_return_code = KN_add_con_linear_struct_one(
+                knitro_context_,
+                variable_ids.size(),
+                constraint_id,
+                variable_ids.data(),
+                coefficients.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_add_con_linear_struct_one", knitro_return_code);
     }
 
     /** Add linear structure to the constraint functions. */
@@ -452,6 +1027,26 @@ public:
             throw KnitroException("KN_add_con_linear_term", knitro_return_code);
     }
 
+    /*
+     * Adding quadratic structure
+     */
+
+    /** Add quadratic structure to the objective (bulk). */
+    void add_obj_quadratic_struct(
+            const std::vector<VariableId>& variable_ids_1,
+            const std::vector<VariableId>& variable_ids_2,
+            const std::vector<double>& coefficients)
+    {
+        int knitro_return_code = KN_add_obj_quadratic_struct(
+                knitro_context_,
+                variable_ids_1.size(),
+                variable_ids_1.data(),
+                variable_ids_2.data(),
+                coefficients.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_add_obj_quadratic_struct", knitro_return_code);
+    }
+
     /** Add quadratic structure to the objective. */
     void add_obj_quadratic_term(
             VariableId variable_id_1,
@@ -465,6 +1060,42 @@ public:
                 coefficient);
         if (knitro_return_code != 0)
             throw KnitroException("KN_add_obj_quadratic_term", knitro_return_code);
+    }
+
+    /** Add quadratic structure to multiple constraint functions at once. */
+    void add_con_quadratic_struct(
+            const std::vector<ConstraintId>& constraint_ids,
+            const std::vector<VariableId>& variable_ids_1,
+            const std::vector<VariableId>& variable_ids_2,
+            const std::vector<double>& coefficients)
+    {
+        int knitro_return_code = KN_add_con_quadratic_struct(
+                knitro_context_,
+                constraint_ids.size(),
+                constraint_ids.data(),
+                variable_ids_1.data(),
+                variable_ids_2.data(),
+                coefficients.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_add_con_quadratic_struct", knitro_return_code);
+    }
+
+    /** Add quadratic structure to one constraint function (bulk). */
+    void add_con_quadratic_struct_one(
+            ConstraintId constraint_id,
+            const std::vector<VariableId>& variable_ids_1,
+            const std::vector<VariableId>& variable_ids_2,
+            const std::vector<double>& coefficients)
+    {
+        int knitro_return_code = KN_add_con_quadratic_struct_one(
+                knitro_context_,
+                variable_ids_1.size(),
+                constraint_id,
+                variable_ids_1.data(),
+                variable_ids_2.data(),
+                coefficients.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_add_con_quadratic_struct_one", knitro_return_code);
     }
 
     /** Add quadratic structure to the constraint functions. */
@@ -485,16 +1116,93 @@ public:
     }
 
     /*
-     * Adding quadratic structure
-     */
-
-    /*
      * Adding conic structure
      */
 
     /*
      * Adding complementarity constraints
      */
+
+    /*
+     * Names
+     */
+
+    /** Set the name of a variable. */
+    void set_var_name(
+            VariableId variable_id,
+            const std::string& name)
+    {
+        int knitro_return_code = KN_set_var_name(
+                knitro_context_,
+                variable_id,
+                name.c_str());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_var_name", knitro_return_code);
+    }
+
+    /** Get the name of a variable. */
+    std::string get_var_name(VariableId variable_id) const
+    {
+        char buffer[4096];
+        int knitro_return_code = KN_get_var_name(
+                knitro_context_,
+                variable_id,
+                sizeof(buffer),
+                buffer);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_var_name", knitro_return_code);
+        return std::string(buffer);
+    }
+
+    /** Set the name of a constraint. */
+    void set_con_name(
+            ConstraintId constraint_id,
+            const std::string& name)
+    {
+        int knitro_return_code = KN_set_con_name(
+                knitro_context_,
+                constraint_id,
+                name.c_str());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_con_name", knitro_return_code);
+    }
+
+    /** Get the name of a constraint. */
+    std::string get_con_name(ConstraintId constraint_id) const
+    {
+        char buffer[4096];
+        int knitro_return_code = KN_get_con_name(
+                knitro_context_,
+                constraint_id,
+                sizeof(buffer),
+                buffer);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_con_name", knitro_return_code);
+        return std::string(buffer);
+    }
+
+    /** Set the name of the objective. */
+    void set_obj_name(const std::string& name)
+    {
+        int knitro_return_code = KN_set_obj_name(
+                knitro_context_,
+                name.c_str());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_obj_name", knitro_return_code);
+    }
+
+    /** Get the name of the objective. */
+    std::string get_obj_name() const
+    {
+        char buffer[4096];
+        int knitro_return_code = KN_get_obj_name(
+                knitro_context_,
+                sizeof(buffer),
+                buffer);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_obj_name", knitro_return_code);
+        return std::string(buffer);
+    }
 
     /*
      * Adding evaluation callbacks
@@ -648,9 +1356,118 @@ public:
             throw KnitroException("KN_set_mip_var_primal_init_value", knitro_return_code);
     }
 
+    /** Set the MIP initial primal values of a subset of variables. */
+    void set_mip_var_primal_init_values(
+            const std::vector<VariableId>& variable_ids,
+            const std::vector<double>& values)
+    {
+        int knitro_return_code = KN_set_mip_var_primal_init_values(
+                knitro_context_,
+                variable_ids.size(),
+                variable_ids.data(),
+                values.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_mip_var_primal_init_values", knitro_return_code);
+    }
+
+    /** Set the MIP initial primal values of all variables. */
+    void set_mip_var_primal_init_values(
+            const std::vector<double>& values)
+    {
+        int knitro_return_code = KN_set_mip_var_primal_init_values_all(
+                knitro_context_,
+                values.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_mip_var_primal_init_values_all", knitro_return_code);
+    }
+
+    /** Set the branching priority of an integer variable. */
+    void set_mip_branching_priority(
+            VariableId variable_id,
+            int priority)
+    {
+        int knitro_return_code = KN_set_mip_branching_priority(
+                knitro_context_,
+                variable_id,
+                priority);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_mip_branching_priority", knitro_return_code);
+    }
+
+    /** Set the branching priorities of a subset of integer variables. */
+    void set_mip_branching_priorities(
+            const std::vector<VariableId>& variable_ids,
+            const std::vector<int>& priorities)
+    {
+        int knitro_return_code = KN_set_mip_branching_priorities(
+                knitro_context_,
+                variable_ids.size(),
+                variable_ids.data(),
+                priorities.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_mip_branching_priorities", knitro_return_code);
+    }
+
+    /** Set the branching priorities of all integer variables. */
+    void set_mip_branching_priorities(
+            const std::vector<int>& priorities)
+    {
+        int knitro_return_code = KN_set_mip_branching_priorities_all(
+                knitro_context_,
+                priorities.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_mip_branching_priorities_all", knitro_return_code);
+    }
+
+    /** Set the strategy for dealing with an integer variable. */
+    void set_mip_intvar_strategy(
+            VariableId variable_id,
+            int strategy)
+    {
+        int knitro_return_code = KN_set_mip_intvar_strategy(
+                knitro_context_,
+                variable_id,
+                strategy);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_mip_intvar_strategy", knitro_return_code);
+    }
+
+    /** Set strategies for dealing with a subset of integer variables. */
+    void set_mip_intvar_strategies(
+            const std::vector<VariableId>& variable_ids,
+            const std::vector<int>& strategies)
+    {
+        int knitro_return_code = KN_set_mip_intvar_strategies(
+                knitro_context_,
+                variable_ids.size(),
+                variable_ids.data(),
+                strategies.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_mip_intvar_strategies", knitro_return_code);
+    }
+
+    /** Set strategies for dealing with all integer variables. */
+    void set_mip_intvar_strategies(
+            const std::vector<int>& strategies)
+    {
+        int knitro_return_code = KN_set_mip_intvar_strategies_all(
+                knitro_context_,
+                strategies.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_mip_intvar_strategies_all", knitro_return_code);
+    }
+
     /*
      * Solving
      */
+
+    /** Update the internal model without solving. */
+    void update()
+    {
+        int knitro_return_code = KN_update(knitro_context_);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_update", knitro_return_code);
+    }
 
     /* Call Knitro to solve the problem. */
     int solve()
@@ -712,10 +1529,10 @@ public:
         return value;
     }
 
-    /** Get the values of the primal variables. */
+    /** Get the values of all primal variables. */
     std::vector<double> get_var_primal_values() const
     {
-        std::vector<double> values(this->get_number_vars(), 0.0);;
+        std::vector<double> values(this->get_number_vars(), 0.0);
         int knitro_return_code = KN_get_var_primal_values_all(
                 knitro_context_,
                 values.data());
@@ -738,6 +1555,18 @@ public:
         return value;
     }
 
+    /** Get the dual values of all variables. */
+    std::vector<double> get_var_dual_values() const
+    {
+        std::vector<double> values(this->get_number_vars(), 0.0);
+        int knitro_return_code = KN_get_var_dual_values_all(
+                knitro_context_,
+                values.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_var_dual_values_all", knitro_return_code);
+        return values;
+    }
+
     /** Get the dual value of a constraint. */
     double get_con_dual_value(
             ConstraintId constraint_id) const
@@ -752,6 +1581,18 @@ public:
         return value;
     }
 
+    /** Get the dual values of all constraints. */
+    std::vector<double> get_con_dual_values() const
+    {
+        std::vector<double> values(this->get_number_cons(), 0.0);
+        int knitro_return_code = KN_get_con_dual_values_all(
+                knitro_context_,
+                values.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_con_dual_values_all", knitro_return_code);
+        return values;
+    }
+
     /** Get the value of a constraint. */
     double get_con_value(
             ConstraintId constraint_id) const
@@ -764,6 +1605,18 @@ public:
         if (knitro_return_code != 0)
             throw KnitroException("KN_get_con_value", knitro_return_code);
         return value;
+    }
+
+    /** Get the values of all constraints. */
+    std::vector<double> get_con_values() const
+    {
+        std::vector<double> values(this->get_number_cons(), 0.0);
+        int knitro_return_code = KN_get_con_values_all(
+                knitro_context_,
+                values.data());
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_con_values_all", knitro_return_code);
+        return values;
     }
 
     /** Get the absolute feasibility error at the solution. */
@@ -814,6 +1667,42 @@ public:
         return rel_opt_error;
     }
 
+    /** Get the number of iterations made by KN_solve. */
+    int get_number_iters() const
+    {
+        int num_iters = 0;
+        int knitro_return_code = KN_get_number_iters(
+                knitro_context_,
+                &num_iters);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_number_iters", knitro_return_code);
+        return num_iters;
+    }
+
+    /** Get the CPU time spent in KN_solve. */
+    double get_solve_time_cpu() const
+    {
+        double time = 0.0;
+        int knitro_return_code = KN_get_solve_time_cpu(
+                knitro_context_,
+                &time);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_solve_time_cpu", knitro_return_code);
+        return time;
+    }
+
+    /** Get the real (wall clock) time spent in KN_solve. */
+    double get_solve_time_real() const
+    {
+        double time = 0.0;
+        int knitro_return_code = KN_get_solve_time_real(
+                knitro_context_,
+                &time);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_solve_time_real", knitro_return_code);
+        return time;
+    }
+
     /** Get the objective value of the MIP incumbent solution. */
     bool has_mip_incumbent() const
     {
@@ -848,6 +1737,54 @@ public:
         if (knitro_return_code != 0)
             throw KnitroException("KN_get_mip_relaxation_bnd", knitro_return_code);
         return relaxation_bound;
+    }
+
+    /** Get the objective value of the most recently solved MIP node subproblem. */
+    double get_mip_lastnode_obj() const
+    {
+        double last_node_obj = 0.0;
+        int knitro_return_code = KN_get_mip_lastnode_obj(
+                knitro_context_,
+                &last_node_obj);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_mip_lastnode_obj", knitro_return_code);
+        return last_node_obj;
+    }
+
+    /** Get the number of nodes processed in the MIP solve. */
+    int get_mip_number_nodes() const
+    {
+        int num_nodes = 0;
+        int knitro_return_code = KN_get_mip_number_nodes(
+                knitro_context_,
+                &num_nodes);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_mip_number_nodes", knitro_return_code);
+        return num_nodes;
+    }
+
+    /** Get the final absolute optimality gap in the MIP solve. */
+    double get_mip_abs_gap() const
+    {
+        double abs_gap = 0.0;
+        int knitro_return_code = KN_get_mip_abs_gap(
+                knitro_context_,
+                &abs_gap);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_mip_abs_gap", knitro_return_code);
+        return abs_gap;
+    }
+
+    /** Get the final relative optimality gap in the MIP solve. */
+    double get_mip_rel_gap() const
+    {
+        double rel_gap = 0.0;
+        int knitro_return_code = KN_get_mip_rel_gap(
+                knitro_context_,
+                &rel_gap);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_get_mip_rel_gap", knitro_return_code);
+        return rel_gap;
     }
 
     /** Get the MIP incumbent solution. */
