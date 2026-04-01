@@ -864,6 +864,13 @@ public:
 
 private:
 
+    struct EvalCallbackStruct
+    {
+        EvalCallback eval_callback;
+        EvalCallback gradient;
+        EvalCallback hessian;
+    };
+
     /*
      * Private attributes
      */
@@ -885,13 +892,6 @@ private:
     /*
      * Private methods
      */
-
-    struct EvalCallbackStruct
-    {
-        EvalCallback eval_callback;
-        EvalCallback gradient;
-        EvalCallback hessian;
-    };
 
     static int eval_callback(
             KN_context* kc,

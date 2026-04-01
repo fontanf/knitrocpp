@@ -104,9 +104,6 @@ int main(int, char**)
             });
     knitro_context.set_cb_grad(
             callback_context,
-            nullptr,
-            nullptr,
-            nullptr,
             [&variables](
                 const knitrocpp::Context&,
                 CB_context*,
@@ -123,8 +120,6 @@ int main(int, char**)
             });
     knitro_context.set_cb_hess(
             callback_context,
-            nullptr,
-            nullptr,
             [&variables](
                 const knitrocpp::Context&,
                 CB_context*,
