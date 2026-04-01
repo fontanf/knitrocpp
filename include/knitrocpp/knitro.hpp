@@ -93,7 +93,7 @@ public:
 
     /** Set a character valued parameter using its integer identifier. */
     void set_char_param(
-            const char param_id,
+            const int param_id,
             const char* const value)
     {
         int knitro_return_code = KN_set_char_param(
@@ -106,7 +106,7 @@ public:
 
     /** Set a double valued parameter using its integer identifier. */
     void set_double_param(
-            const double param_id,
+            const int param_id,
             const double value)
     {
         int knitro_return_code = KN_set_double_param(
