@@ -303,6 +303,19 @@ public:
             throw KnitroException("KN_set_con_upbnd", knitro_return_code);
     }
 
+    /** Set an equality bound on a constraint. */
+    void set_con_eqbnd(
+            ConstraintId constraint_id,
+            double value)
+    {
+        int knitro_return_code = KN_set_con_eqbnd(
+                knitro_context_,
+                constraint_id,
+                value);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_con_eqbnd", knitro_return_code);
+    }
+
     /** Get the lower bound of a constraint. */
     double get_con_lobnd(
             ConstraintId constraint_id) const
@@ -399,6 +412,17 @@ public:
     /*
      * Adding/removing/changing linear structure
      */
+
+    /** Add a constant to the objective function. */
+    void add_obj_constant(
+            const double constant)
+    {
+        int knitro_return_code = KN_add_obj_constant(
+                knitro_context_,
+                constant);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_add_obj_constant", knitro_return_code);
+    }
 
     /** Add linear structure to the objective function. */
     void add_obj_linear_term(
