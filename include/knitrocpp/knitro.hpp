@@ -68,11 +68,14 @@ public:
     }
 
     /** Destructor. */
-    virtual ~Context()
+    ~Context()
     {
         if (own_context_)
             KN_free(&knitro_context_);
     }
+
+    Context(const Context&) = delete;
+    Context& operator=(const Context&) = delete;
 
     /*
      * Changing and reading solver parameters
