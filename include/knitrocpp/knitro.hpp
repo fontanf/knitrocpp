@@ -547,23 +547,42 @@ public:
                 eval_result);
     }
 
+    /** Set gradient callback (dense). */
     void set_cb_grad(
             CB_context* callback_context,
-            std::vector<VariableId>* objgrad_variable_ids,
-            std::vector<ConstraintId>* jacobian_constraint_ids,
-            std::vector<VariableId>* jacobian_variable_ids,
             EvalCallback gradient_callback_function)
     {
-        EvalCallbackStruct* eval_callback_struct = cb2eval_[callback_context];
-        eval_callback_struct->gradient = gradient_callback_function;
+        cb2eval_.at(callback_context)->gradient = gradient_callback_function;
         int knitro_return_code = KN_set_cb_grad(
                 knitro_context_,
                 callback_context,
-                (objgrad_variable_ids == nullptr)? KN_DENSE: objgrad_variable_ids->size(),
-                (objgrad_variable_ids == nullptr)? nullptr: objgrad_variable_ids->data(),
-                (jacobian_constraint_ids == nullptr)? KN_DENSE: jacobian_constraint_ids->size(),
-                (jacobian_constraint_ids == nullptr)? nullptr: jacobian_constraint_ids->data(),
-                (jacobian_variable_ids == nullptr)? nullptr: jacobian_variable_ids->data(),
+                KN_DENSE,
+                nullptr,
+                KN_DENSE,
+                nullptr,
+                nullptr,
+                gradient_callback);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_cb_grad", knitro_return_code);
+    }
+
+    /** Set gradient callback (sparse). */
+    void set_cb_grad(
+            CB_context* callback_context,
+            const std::vector<VariableId>& objgrad_variable_ids,
+            const std::vector<ConstraintId>& jacobian_constraint_ids,
+            const std::vector<VariableId>& jacobian_variable_ids,
+            EvalCallback gradient_callback_function)
+    {
+        cb2eval_.at(callback_context)->gradient = gradient_callback_function;
+        int knitro_return_code = KN_set_cb_grad(
+                knitro_context_,
+                callback_context,
+                objgrad_variable_ids.size(),
+                objgrad_variable_ids.data(),
+                jacobian_constraint_ids.size(),
+                jacobian_constraint_ids.data(),
+                jacobian_variable_ids.data(),
                 gradient_callback);
         if (knitro_return_code != 0)
             throw KnitroException("KN_set_cb_grad", knitro_return_code);
@@ -585,20 +604,37 @@ public:
                 eval_result);
     }
 
+    /** Set Hessian callback (dense). */
     void set_cb_hess(
             CB_context* callback_context,
-            std::vector<VariableId>* variable_ids_1,
-            std::vector<VariableId>* variable_ids_2,
             EvalCallback hessian_callback_function)
     {
-        EvalCallbackStruct* eval_callback_struct = cb2eval_[callback_context];
-        eval_callback_struct->hessian = hessian_callback_function;
+        cb2eval_.at(callback_context)->hessian = hessian_callback_function;
         int knitro_return_code = KN_set_cb_hess(
                 knitro_context_,
                 callback_context,
-                (variable_ids_1 == nullptr)? KN_DENSE_ROWMAJOR: variable_ids_1->size(),
-                (variable_ids_1 == nullptr)? nullptr: variable_ids_1->data(),
-                (variable_ids_1 == nullptr)? nullptr: variable_ids_2->data(),
+                KN_DENSE_ROWMAJOR,
+                nullptr,
+                nullptr,
+                hessian_callback);
+        if (knitro_return_code != 0)
+            throw KnitroException("KN_set_cb_hess", knitro_return_code);
+    }
+
+    /** Set Hessian callback (sparse). */
+    void set_cb_hess(
+            CB_context* callback_context,
+            const std::vector<VariableId>& variable_ids_1,
+            const std::vector<VariableId>& variable_ids_2,
+            EvalCallback hessian_callback_function)
+    {
+        cb2eval_.at(callback_context)->hessian = hessian_callback_function;
+        int knitro_return_code = KN_set_cb_hess(
+                knitro_context_,
+                callback_context,
+                variable_ids_1.size(),
+                variable_ids_1.data(),
+                variable_ids_2.data(),
                 hessian_callback);
         if (knitro_return_code != 0)
             throw KnitroException("KN_set_cb_hess", knitro_return_code);
