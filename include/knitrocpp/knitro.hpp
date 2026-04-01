@@ -767,7 +767,7 @@ public:
     }
 
     /** Get the absolute feasibility error at the solution. */
-    double get_abs_feas_error()
+    double get_abs_feas_error() const
     {
         double abs_feas_error = -1;
         int knitro_return_code = KN_get_abs_feas_error(
@@ -779,7 +779,7 @@ public:
     }
 
     /** Get the relative feasibility error at the solution. */
-    double get_rel_feas_error()
+    double get_rel_feas_error() const
     {
         double rel_feas_error = -1;
         int knitro_return_code = KN_get_rel_feas_error(
@@ -791,7 +791,7 @@ public:
     }
 
     /** Get the absolute optimality error at the solution. */
-    double get_abs_opt_error()
+    double get_abs_opt_error() const
     {
         double abs_opt_error = -1;
         int knitro_return_code = KN_get_abs_opt_error(
@@ -803,7 +803,7 @@ public:
     }
 
     /** Get the relative optimality error at the solution. */
-    double get_rel_opt_error()
+    double get_rel_opt_error() const
     {
         double rel_opt_error = -1;
         int knitro_return_code = KN_get_rel_opt_error(
