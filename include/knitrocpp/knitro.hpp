@@ -136,16 +136,17 @@ public:
         return variable_id;
     }
 
-    /** Add multiple variables to the problem. */
-    void add_vars(VariableId number_of_variables)
+    /** Add number_of_variables variables to the problem, returning their ids. */
+    std::vector<VariableId> add_vars(VariableId number_of_variables)
     {
-        VariableId variable_id = -1;
+        std::vector<VariableId> variable_ids(number_of_variables, -1);
         int knitro_return_code = KN_add_vars(
                 knitro_context_,
                 number_of_variables,
-                NULL);
+                variable_ids.data());
         if (knitro_return_code != 0)
             throw KnitroException("KN_add_vars", knitro_return_code);
+        return variable_ids;
     }
 
     /** Add an empty constraint to the problem. */
@@ -160,15 +161,17 @@ public:
         return constraint_id;
     }
 
-    /** Add empty constraints to the problem. */
-    void add_cons(ConstraintId number_of_constraints)
+    /** Add number_of_constraints constraints to the problem, returning their ids. */
+    std::vector<ConstraintId> add_cons(ConstraintId number_of_constraints)
     {
+        std::vector<ConstraintId> constraint_ids(number_of_constraints, -1);
         int knitro_return_code = KN_add_cons(
                 knitro_context_,
                 number_of_constraints,
-                NULL);
+                constraint_ids.data());
         if (knitro_return_code != 0)
             throw KnitroException("KN_add_cons", knitro_return_code);
+        return constraint_ids;
     }
 
     /** Set the lower bound of a variable. */
